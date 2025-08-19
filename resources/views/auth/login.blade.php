@@ -15,14 +15,23 @@
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
 
     <style>
-        body {
+            body {
             font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+            background-image: url('assets/images/back.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+
             min-height: 100vh;
+            margin: 0;
+
             display: flex;
             align-items: center;
             justify-content: center;
         }
+
 
         .login-card {
             background-color: #fff;
@@ -71,6 +80,25 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .btn-custom {
+            background-color: #4064aa;
+            color: #ffffff;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 0.75rem;
+            width: 100%;
+        }
+
+            .btn-custom:hover,
+            .btn-custom:focus,
+            .btn-custom:active,
+            .btn-custom:focus-visible {
+                background-color: #7c7c7c;
+                color: #ffffff;
+                box-shadow: none;
+            }
+
     </style>
 </head>
 <body>
@@ -98,9 +126,12 @@
         <div class="text-danger mb-2 text-end">{{ $message }}</div>
     @enderror
 
-    <button type="submit" class="btn btn-primary mt-2 d-flex align-items-center justify-content-center">
+   <button type="submit" class="btn btn-custom d-flex align-items-center justify-content-center" id="loginButton">
         <i class="fas fa-sign-in-alt me-1"></i> تسجيل الدخول
     </button>
+
+
+
 </form>
 
         <!-- <div class="mt-3">
@@ -110,5 +141,21 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const button = document.getElementById('loginButton');
+
+            form.addEventListener('submit', function() {
+                    button.disabled = true;
+
+                button.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    جاري التحقق...
+                `;
+            });
+        });
+    </script>
+
 </body>
 </html>
