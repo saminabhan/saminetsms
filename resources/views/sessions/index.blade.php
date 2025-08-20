@@ -20,7 +20,7 @@
             @foreach($sessions as $session)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $session->user_name }}</td>
+                    <td>{{ $session->user_name ?? 'ضيف' }}</td>
                     <td>{{ $session->ip_address }}</td>
                     <td>
                         @php
