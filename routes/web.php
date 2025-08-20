@@ -28,8 +28,9 @@ Route::post('login', function(\Illuminate\Http\Request $request) {
 
     return back()->with('error', 'البريد الإلكتروني أو كلمة المرور غير صحيحة');
 });
+
 Route::get('password/reset', function() {
-    return "صفحة إعادة تعيين كلمة المرور"; // لاحقاً يمكنك عمل form
+    return "صفحة إعادة تعيين كلمة المرور";
 })->name('password.request');
 
 // معالجة logout
@@ -51,32 +52,35 @@ Route::middleware('auth')->group(function() {
     Route::resource('messages', MessageController::class)->except(['edit', 'update', 'destroy']);
     Route::post('messages/{message}/resend', [MessageController::class, 'resend'])
          ->name('messages.resend');
+    
+    // مسار مساعد الذكاء الاصطناعي (مرة واحدة فقط)
+    Route::post('/messages/ai-suggest', [MessageController::class, 'aiSuggest'])
+        ->name('messages.aiSuggest');
 
     // مسار لوحة التحكم الرئيسية
     Route::get('/dashboard', function () {
-    $totalSubscribers = \App\Models\Subscriber::count();
-    $activeSubscribers = \App\Models\Subscriber::where('is_active', true)->count();
-    $totalMessages = \App\Models\Message::count();
-    $sentMessages = \App\Models\Message::where('status', 'sent')->count();
-    $failedMessages = \App\Models\Message::where('status', 'failed')->count();
+        $totalSubscribers = \App\Models\Subscriber::count();
+        $activeSubscribers = \App\Models\Subscriber::where('is_active', true)->count();
+        $totalMessages = \App\Models\Message::count();
+        $sentMessages = \App\Models\Message::where('status', 'sent')->count();
+        $failedMessages = \App\Models\Message::where('status', 'failed')->count();
 
-    // جلب رصيد الرسائل من API
-    $smsBalance = 0;
-    try {
-        $response = file_get_contents('http://hotsms.ps/getbalance.php?api_token=66ef464c07d8f');
-        $smsBalance = intval($response); // تحويل الرد إلى عدد صحيح
-    } catch (\Exception $e) {
-        $smsBalance = 0; // في حال حدوث خطأ
-    }
+        // جلب رصيد الرسائل من API
+        $smsBalance = 0;
+        try {
+            $response = file_get_contents('http://hotsms.ps/getbalance.php?api_token=66ef464c07d8f');
+            $smsBalance = intval($response);
+        } catch (\Exception $e) {
+            $smsBalance = 0;
+        }
 
-    return view('dashboard', compact(
-        'totalSubscribers',
-        'activeSubscribers', 
-        'totalMessages',
-        'sentMessages',
-        'failedMessages',
-        'smsBalance'
-    ));
-})->name('dashboard');
-
+        return view('dashboard', compact(
+            'totalSubscribers',
+            'activeSubscribers', 
+            'totalMessages',
+            'sentMessages',
+            'failedMessages',
+            'smsBalance'
+        ));
+    })->name('dashboard');
 });

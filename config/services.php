@@ -13,6 +13,10 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'openai' => [
+    'key' => env('OPENAI_API_KEY'),
+],
+
 
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
@@ -34,5 +38,7 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+
+
 
 ];
