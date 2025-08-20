@@ -220,6 +220,7 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const selectAllCheckbox = document.getElementById('selectAll');
@@ -332,8 +333,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.suggestion) {
                 messageTextarea.value = data.suggestion;
                 messageTextarea.dispatchEvent(new Event('input'));
-                
-                // مسح حقل الطلب المخصص
                 aiPrompt.value = '';
             } else {
                 alert(data.error || "لم يتمكن النظام من توليد نص.");
@@ -378,11 +377,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // إظهار spinner عند الإرسال
-    messageForm.addEventListener('submit', function() {
-        sendButton.disabled = true;
-        sendingSpinner.classList.remove('d-none');
-        sendButton.innerHTML = '<i class="fas fa-paper-plane me-1"></i> جاري الإرسال... <span class="spinner-border spinner-border-sm ms-2"></span>';
+    // تأكيد الإرسال مع SweetAlert2
+    messageForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // منع الإرسال الافتراضي
+
+        Swal.fire({
+            title: 'تأكيد الإرسال',
+            text: 'هل أنت متأكد أنك تريد إرسال هذه الرسالة للمشتركين المحددين؟',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، إرسال',
+            cancelButtonText: 'إلغاء',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                sendButton.disabled = true;
+                sendingSpinner.classList.remove('d-none');
+                sendButton.innerHTML = '<i class="fas fa-paper-plane me-1"></i> جاري الإرسال... <span class="spinner-border spinner-border-sm ms-2"></span>';
+                messageForm.submit(); // إرسال النموذج فعلياً
+            }
+        });
     });
 
     // التحديث الأولي
