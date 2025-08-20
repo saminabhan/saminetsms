@@ -16,7 +16,7 @@
 </div>
 
 <!-- معلومات المشترك -->
-<div class="card mb-4">
+<div class="card mb-4 animate__animated animate__fadeInUp animate__delay-0.5s">
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
@@ -39,7 +39,7 @@
 </div>
 
 <!-- جدول الرسائل -->
-<div class="card">
+<div class="card animate__animated animate__fadeInUp animate__delay-0.5s">
     <div class="card-header">
         <h5 class="card-title mb-0">
             <i class="fas fa-envelope me-2"></i>

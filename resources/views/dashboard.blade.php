@@ -11,7 +11,7 @@
 </div>
 
 <!-- Statistics Cards -->
-<div class="row mb-4">
+<div class="row mb-4 animate__animated animate__fadeInUp animate__delay-0.5s">
     <div class="col-12 col-sm-6 col-md-4 col-lg text-center mb-3">
         <div class="card stats-card">
             <div class="card-body">
@@ -65,7 +65,7 @@
 
 
 <!-- Quick Actions -->
-<div class="row">
+<div class="row animate__animated animate__fadeInUp animate__delay-0.5s">
     <div class="col-md-6 mb-4">
         <div class="card">
             <div class="card-header">

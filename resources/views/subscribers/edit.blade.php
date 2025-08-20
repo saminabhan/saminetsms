@@ -5,7 +5,7 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
+        <div class="card animate__animated animate__fadeInUp animate__delay-0.5s">
             <div class="card-header">
                 <h5 class="card-title mb-0">
                     <i class="fas fa-edit me-2"></i>

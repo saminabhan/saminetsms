@@ -100,9 +100,12 @@
             }
 
     </style>
+    <!-- Animate.css CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
 </head>
 <body>
-    <div class="login-card">
+    <div class="login-card animate__animated animate__fadeInUp animate__delay-0.5s">
         <img src="{{ asset('assets/images/sami-logo.png') }}" alt="SamiNetSMS Logo" class="img-fluid mb-3" style="max-width: 280px; height: auto;">
         <h1>تسجيل الدخول</h1>
 

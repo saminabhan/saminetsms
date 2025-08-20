@@ -6,7 +6,7 @@
 <div class="container py-4">
     <h2 class="mb-4">جلسات دخول النظام</h2>
 
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered animate__animated animate__fadeInUp animate__delay-0.5s">
         <thead class="table-dark">
             <tr>
                 <th>#</th>

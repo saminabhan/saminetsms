@@ -156,12 +156,12 @@ footer i {
     <ul class="navbar-nav ms-auto">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: rgba(255,255,255,0.9) !important;">
-                <i class="fas fa-user me-1"></i> مرحباً بك يا {{ Auth::user()->name }}
+                <i class="fas fa-user me-1"></i> مرحباً بك يا {{ Auth::user()->name }}!
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                <li>
-                    <a class="dropdown-item" href="">
-                        <i class="fas fa-cog me-2"></i> الإعدادات
+               <li>
+                    <a class="dropdown-item" href="{{ route('account.settings') }}">
+                        <i class="fas fa-cog me-2"></i> إعدادات الحساب
                     </a>
                 </li>
                 <li><hr class="dropdown-divider"></li>
@@ -272,6 +272,8 @@ footer i {
             sidebar.classList.toggle('show');
         });
     </script>
+<!-- Animate.css CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
     @yield('scripts')
 </body>

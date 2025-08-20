@@ -15,7 +15,7 @@
     </a>
 </div>
 
-<div class="card">
+<div class="card animate__animated animate__fadeInUp animate__delay-0.5s">
     <div class="card-body">
         @if($messages->count() > 0)
             <div class="table-responsive">

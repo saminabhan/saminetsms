@@ -1,5 +1,7 @@
 <?php
 // routes/web.php
+
+use App\Http\Controllers\AccountSettingsController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\SessionsController;
@@ -86,4 +88,18 @@ Route::middleware('auth')->group(function() {
             'smsBalance'
         ));
     })->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    // عرض صفحة الإعدادات
+    Route::get('/account/settings', [AccountSettingsController::class, 'index'])
+        ->name('account.settings');
+
+    // تحديث الاسم والإيميل
+    Route::post('/account/settings/profile', [AccountSettingsController::class, 'updateProfile'])
+        ->name('account.settings.updateProfile');
+
+    // تحديث كلمة المرور
+    Route::post('/account/settings/password', [AccountSettingsController::class, 'updatePassword'])
+        ->name('account.settings.updatePassword');
+});
+
 });
