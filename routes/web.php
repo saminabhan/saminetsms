@@ -2,6 +2,7 @@
 // routes/web.php
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\SessionsController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,6 +57,8 @@ Route::middleware('auth')->group(function() {
     // مسار مساعد الذكاء الاصطناعي (مرة واحدة فقط)
     Route::post('/messages/ai-suggest', [MessageController::class, 'aiSuggest'])
         ->name('messages.aiSuggest');
+
+    Route::get('/sessions', [SessionsController::class, 'index'])->name('sessions.index');
 
     // مسار لوحة التحكم الرئيسية
     Route::get('/dashboard', function () {
