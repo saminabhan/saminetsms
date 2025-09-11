@@ -9,6 +9,7 @@ use App\Models\SubscriberBalance;
 use App\Models\Payment;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class FinanceController extends Controller
 {
@@ -50,8 +51,12 @@ class FinanceController extends Controller
         $totalBank = max(0, $bankIn - $bankOut);
 
         // إيراد الشهر الحالي
-        $currentMonthRevenue = (float) Payment::whereBetween('paid_at', [now()->startOfMonth()->format('Y-m-d'), now()->endOfMonth()->format('Y-m-d')])
-            ->sum('amount');
+        $startOfMonth = now()->startOfMonth()->format('Y-m-d');
+        $endOfMonth = now()->endOfMonth()->format('Y-m-d');
+
+        // إجمالي المبلغ لجميع الفواتير خلال الشهر الحالي
+        $currentMonthRevenue = (float) Invoice::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->sum('final_amount');
 
         // آخر الفواتير
         $recentInvoices = Invoice::with(['subscriber', 'service'])
