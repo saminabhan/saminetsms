@@ -67,69 +67,82 @@ Route::middleware('auth')->group(function() {
     Route::get('/sessions', [SessionsController::class, 'index'])->name('sessions.index');
 
     // مسار لوحة التحكم الرئيسية
-    Route::get('/dashboard', function () {
-        $totalSubscribers = \App\Models\Subscriber::count();
-        $activeSubscribers = \App\Models\Subscriber::where('is_active', true)->count();
-        $totalMessages = \App\Models\Message::count();
-        $sentMessages = \App\Models\Message::where('status', 'sent')->count();
-        $failedMessages = \App\Models\Message::where('status', 'failed')->count();
+  Route::get('/dashboard', function () {
+    // Subscribers & Messages stats
+    $totalSubscribers = \App\Models\Subscriber::count();
+    $activeSubscribers = \App\Models\Subscriber::where('is_active', true)->count();
+    $totalMessages = \App\Models\Message::count();
+    $sentMessages = \App\Models\Message::where('status', 'sent')->count();
+    $failedMessages = \App\Models\Message::where('status', 'failed')->count();
 
-        // جلب رصيد الرسائل من API
+    // SMS balance from API
+    $smsBalance = 0;
+    try {
+        $response = file_get_contents('http://hotsms.ps/getbalance.php?api_token=66ef464c07d8f');
+        $smsBalance = intval($response);
+    } catch (\Exception $e) {
         $smsBalance = 0;
-        try {
-            $response = file_get_contents('http://hotsms.ps/getbalance.php?api_token=66ef464c07d8f');
-            $smsBalance = intval($response);
-        } catch (\Exception $e) {
-            $smsBalance = 0;
-        }
+    }
 
-        // Finance quick stats
-        $cashIn = (float) \App\Models\Payment::where('method','cash')->sum('amount');
-        $bankIn = (float) \App\Models\Payment::where('method','bank')->sum('amount');
-        $cashOut = (float) \App\Models\Withdrawal::where('source','cash')->sum('amount');
-        $bankOut = (float) \App\Models\Withdrawal::where('source','bank')->sum('amount');
-        $cashBalance = max(0, $cashIn - $cashOut);
-        $bankBalance = max(0, $bankIn - $bankOut);
+    // Finance quick stats
+    // الرصيد الافتتاحي لكل صندوق
+    $cashBoxOpening = (float) \App\Models\CashBox::where('type', 'cash')->sum('opening_balance');
+    $bankBoxOpening = (float) \App\Models\CashBox::where('type', 'bank')->sum('opening_balance');
 
-        $startThisMonth = now()->startOfMonth()->format('Y-m-d');
-        $endThisMonth = now()->endOfMonth()->format('Y-m-d');
-        $startPrevMonth = now()->subMonth()->startOfMonth()->format('Y-m-d');
-        $endPrevMonth = now()->subMonth()->endOfMonth()->format('Y-m-d');
+    // تدفقات نقدي/بنكي
+    $cashIn = (float) \App\Models\Payment::where('method','cash')->sum('amount');
+    $bankIn = (float) \App\Models\Payment::where('method','bank')->sum('amount');
+    $cashOut = (float) \App\Models\Withdrawal::where('source','cash')->sum('amount');
+    $bankOut = (float) \App\Models\Withdrawal::where('source','bank')->sum('amount');
 
-        $revenueThisMonth = (float) \App\Models\Payment::whereBetween('paid_at', [$startThisMonth, $endThisMonth])->sum('amount');
-        $revenuePrevMonth = (float) \App\Models\Payment::whereBetween('paid_at', [$startPrevMonth, $endPrevMonth])->sum('amount');
-        $moMChange = $revenuePrevMonth > 0 ? (($revenueThisMonth - $revenuePrevMonth) / $revenuePrevMonth) * 100 : null;
+    // الرصيد الحالي مع الرصيد الافتتاحي
+    $cashBalance = max(0, $cashBoxOpening + $cashIn - $cashOut);
+    $bankBalance = max(0, $bankBoxOpening + $bankIn - $bankOut);
 
-        $topPayers = \App\Models\Payment::selectRaw('invoices.subscriber_id, SUM(payments.amount) as total')
-            ->join('invoices', 'invoices.id', '=', 'payments.invoice_id')
-            ->whereBetween('paid_at', [$startThisMonth, $endThisMonth])
-            ->groupBy('invoices.subscriber_id')
-            ->orderByDesc('total')
-            ->limit(5)
-            ->get()
-            ->map(function($row){
-                $subscriber = \App\Models\Subscriber::find($row->subscriber_id);
-                return [
-                    'subscriber' => $subscriber,
-                    'total' => $row->total,
-                ];
-            });
+    // Month revenue
+    $startThisMonth = now()->startOfMonth()->format('Y-m-d');
+    $endThisMonth = now()->endOfMonth()->format('Y-m-d');
+    $startPrevMonth = now()->subMonth()->startOfMonth()->format('Y-m-d');
+    $endPrevMonth = now()->subMonth()->endOfMonth()->format('Y-m-d');
 
-        return view('dashboard', compact(
-            'totalSubscribers',
-            'activeSubscribers', 
-            'totalMessages',
-            'sentMessages',
-            'failedMessages',
-            'smsBalance',
-            'cashBalance',
-            'bankBalance',
-            'revenueThisMonth',
-            'revenuePrevMonth',
-            'moMChange',
-            'topPayers'
-        ));
-    })->name('dashboard');
+    $revenueThisMonth = (float) \App\Models\Payment::whereBetween('paid_at', [$startThisMonth, $endThisMonth])->sum('amount');
+    $revenuePrevMonth = (float) \App\Models\Payment::whereBetween('paid_at', [$startPrevMonth, $endPrevMonth])->sum('amount');
+    $moMChange = $revenuePrevMonth > 0 ? (($revenueThisMonth - $revenuePrevMonth) / $revenuePrevMonth) * 100 : null;
+
+    // Top 5 payers this month
+    $topPayers = \App\Models\Payment::selectRaw('invoices.subscriber_id, SUM(payments.amount) as total')
+        ->join('invoices', 'invoices.id', '=', 'payments.invoice_id')
+        ->whereBetween('paid_at', [$startThisMonth, $endThisMonth])
+        ->groupBy('invoices.subscriber_id')
+        ->orderByDesc('total')
+        ->limit(5)
+        ->get()
+        ->map(function($row){
+            $subscriber = \App\Models\Subscriber::find($row->subscriber_id);
+            return [
+                'subscriber' => $subscriber,
+                'total' => $row->total,
+            ];
+        });
+
+    return view('dashboard', compact(
+        'totalSubscribers',
+        'activeSubscribers', 
+        'totalMessages',
+        'sentMessages',
+        'failedMessages',
+        'smsBalance',
+        'cashBalance',
+        'bankBalance',
+        'cashBoxOpening',
+        'bankBoxOpening',
+        'revenueThisMonth',
+        'revenuePrevMonth',
+        'moMChange',
+        'topPayers'
+    ));
+})->name('dashboard');
+
 Route::get('invoices/get-distributor-cards', [InvoiceController::class, 'getDistributorCards'])->name('invoices.getDistributorCards');
 
 Route::middleware(['auth'])->group(function () {
