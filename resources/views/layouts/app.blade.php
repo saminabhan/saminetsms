@@ -131,6 +131,7 @@ footer i {
     display: none; /* إزالة أيقونات غير ضرورية */
 }
     </style>
+    @stack('styles')
 </head>
 <body>
     <!-- Navigation -->
@@ -214,6 +215,69 @@ footer i {
                 الرسائل
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" 
+               href="{{ route('invoices.index') }}">
+                <i class="fas fa-file-invoice me-2"></i>
+                الفواتير
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('services.*') ? 'active' : '' }}" 
+               href="{{ route('services.index') }}">
+                <i class="fas fa-cogs me-2"></i>
+                الخدمات
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('service-categories.*') ? 'active' : '' }}" 
+               href="{{ route('service-categories.index') }}">
+                <i class="fas fa-tags me-2"></i>
+                فئات الخدمات
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('finance.*') ? 'active' : '' }}" 
+               href="{{ route('finance.index') }}">
+                <i class="fas fa-coins me-2"></i>
+                المالية
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('finance.debtors') ? 'active' : '' }}" 
+               href="{{ route('finance.debtors') }}">
+                <i class="fas fa-user-minus me-2"></i>
+                المدينون
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('finance.balances') ? 'active' : '' }}" 
+               href="{{ route('finance.balances') }}">
+                <i class="fas fa-scale-balanced me-2"></i>
+                أرصدة المشتركين
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('expense-categories.*') ? 'active' : '' }}" 
+               href="{{ route('expense-categories.index') }}">
+                <i class="fas fa-list me-2"></i>
+                فئات المصروفات
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" 
+               href="{{ route('partners.index') }}">
+                <i class="fas fa-people-group me-2"></i>
+                الشركاء
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request()->routeIs('withdrawals.*') ? 'active' : '' }}" 
+               href="{{ route('withdrawals.index') }}">
+                <i class="fas fa-arrow-down-wide-short me-2"></i>
+                السحوبات
+            </a>
+        </li>
     </ul>
 
     <div class="mt-auto text-center" style="font-size: 0.75rem; color: #b0bec5;">
@@ -277,5 +341,6 @@ footer i {
 <!-- أضف هذا السطر قبل </body> أو في قسم السكريبتات -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('scripts')
+    @stack('scripts')
 </body>
 </html>

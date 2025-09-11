@@ -63,6 +63,84 @@
     </div>
 </div>
 
+<div class="row mb-4">
+  <div class="col-md-3 mb-3">
+    <div class="card stats-card">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-bold">رصيد الصندوق النقدي</div>
+          <div class="fs-4">{{ number_format($cashBalance ?? 0, 2) }} ش.ج</div>
+        </div>
+        <i class="fas fa-cash-register fa-2x"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card stats-card">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-bold">رصيد الصندوق البنكي</div>
+          <div class="fs-4">{{ number_format($bankBalance ?? 0, 2) }} ش.ج</div>
+        </div>
+        <i class="fas fa-building-columns fa-2x"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card stats-card success">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-bold">إيراد هذا الشهر</div>
+          <div class="fs-4">{{ number_format($revenueThisMonth ?? 0, 2) }} ش.ج</div>
+        </div>
+        <i class="fas fa-coins fa-2x"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 mb-3">
+    <div class="card stats-card {{ ($moMChange ?? 0) >= 0 ? 'success' : 'danger' }}">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-bold">مقارنة بالشهر السابق</div>
+          <div class="fs-4">{{ isset($moMChange) ? round($moMChange, 1) . '%' : 'N/A' }}</div>
+        </div>
+        <i class="fas fa-chart-line fa-2x"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="card-title mb-0"><i class="fas fa-trophy me-2"></i> أعلى 5 مشتركين دفعاً هذا الشهر</h5>
+    <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-primary">عرض الفواتير</a>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>المشترك</th>
+            <th>الهاتف</th>
+            <th>إجمالي المدفوع</th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse(($topPayers ?? []) as $row)
+          <tr>
+            <td>{{ $row['subscriber']->name ?? '-' }}</td>
+            <td>{{ $row['subscriber']->phone ?? '-' }}</td>
+            <td class="text-success">{{ number_format($row['total'] ?? 0, 2) }} ش.ج</td>
+          </tr>
+          @empty
+          <tr><td colspan="3" class="text-center text-muted">لا توجد بيانات لهذا الشهر</td></tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div>
+
 
 <!-- Quick Actions -->
 <div class="row animate__animated animate__fadeInUp animate__delay-0.5s">

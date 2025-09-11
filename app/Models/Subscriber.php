@@ -38,4 +38,60 @@ class Subscriber extends Model
         
         return $phone;
     }
+
+    public function invoices()
+{
+    return $this->hasMany(Invoice::class);
+}
+
+public function balance()
+{
+    return $this->hasOne(SubscriberBalance::class);
+}
+
+// Scopes
+public function scopeWithDebts($query)
+{
+    return $query->whereHas('balance', function($q) {
+        $q->where('balance', '<', 0);
+    });
+}
+
+public function scopeWithCredits($query)
+{
+    return $query->whereHas('balance', function($q) {
+        $q->where('balance', '>', 0);
+    });
+}
+
+// Accessors
+public function getCurrentBalanceAttribute()
+{
+    if (!$this->balance) {
+        SubscriberBalance::updateOrCreateForSubscriber($this->id);
+        $this->load('balance');
+    }
+    return $this->balance->balance ?? 0;
+}
+
+public function getTotalInvoicesAttribute()
+{
+    return $this->invoices()->sum('final_amount');
+}
+
+public function getTotalPaidAttribute()
+{
+    return $this->invoices()->sum('paid_amount');
+}
+
+public function getOutstandingAmountAttribute()
+{
+    return $this->invoices()->sum('final_amount') - $this->invoices()->sum('paid_amount');
+}
+
+// Methods
+public function updateBalance()
+{
+    return SubscriberBalance::updateOrCreateForSubscriber($this->id);
+}
 }
