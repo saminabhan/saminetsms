@@ -2,6 +2,7 @@
 // routes/web.php
 
 use App\Http\Controllers\AccountSettingsController;
+use App\Http\Controllers\DistributorController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SubscriberController;
@@ -129,6 +130,8 @@ Route::middleware('auth')->group(function() {
             'topPayers'
         ));
     })->name('dashboard');
+Route::get('invoices/get-distributor-cards', [InvoiceController::class, 'getDistributorCards'])->name('invoices.getDistributorCards');
+
 Route::middleware(['auth'])->group(function () {
     // عرض صفحة الإعدادات
     Route::get('/account/settings', [AccountSettingsController::class, 'index'])
@@ -167,7 +170,20 @@ Route::middleware(['auth'])->group(function () {
     // روتس فئات الخدمات
     Route::resource('service-categories', \App\Http\Controllers\ServiceCategoryController::class);
 });
+
 // في routes/web.php أضف هذا السطر
 Route::get('/get-services-by-category', [InvoiceController::class, 'getServicesByCategory'])
     ->name('invoices.getServicesByCategory');
+    Route::resource('distributors', DistributorController::class);
+Route::get('distributors/{distributor}/add-cards', [DistributorController::class, 'addCards'])->name('distributors.add-cards');
+Route::post('distributors/{distributor}/store-cards', [DistributorController::class, 'storeCards'])->name('distributors.store-cards');
+
+// Ajax routes for distributors
+Route::get('distributors/services-by-category', [DistributorController::class, 'getServicesByCategory']);
+Route::get('distributors/{distributor}/cards', [DistributorController::class, 'getDistributorCards']);
+
+// Ajax routes for invoices
+Route::get('invoices/services-by-category', [InvoiceController::class, 'getServicesByCategory']);
+Route::get('invoices/service-price', [InvoiceController::class, 'getServicePrice']);
+
 });

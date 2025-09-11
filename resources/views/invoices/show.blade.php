@@ -35,18 +35,41 @@
                
                 <div class="row">
                     <!-- معلومات المشترك -->
-                    <div class="col-md-6 mb-4">
-                        <h6 class="text-muted mb-3">معلومات المشترك</h6>
-                        <div class="mb-2">
-                            <strong>الاسم:</strong>
-                            <a href="{{ route('subscribers.show', $invoice->subscriber) }}" class="text-decoration-none">
-                                {{ $invoice->subscriber->name }}
-                            </a>
-                        </div>
-                        <div class="mb-2">
-                            <strong>رقم الهاتف:</strong> {{ $invoice->subscriber->phone }}
-                        </div>
-                    </div>
+                 <div class="col-md-6 mb-4">
+
+    @if($invoice->client_type === 'subscriber' && $invoice->subscriber)
+        <h6 class="text-muted mb-3">معلومات المشترك</h6>
+
+        <!-- بيانات المشترك -->
+        <div class="mb-2">
+            <strong>الاسم:</strong>
+            <a href="{{ route('subscribers.show', $invoice->subscriber) }}" class="text-decoration-none">
+                {{ $invoice->subscriber->name }}
+            </a>
+        </div>
+        <div class="mb-2">
+            <strong>رقم الهاتف:</strong> {{ $invoice->subscriber->phone }}
+        </div>
+
+    @elseif($invoice->client_type === 'distributor' && $invoice->distributor)
+        <h6 class="text-muted mb-3">معلومات الموزع</h6>
+
+        <!-- بيانات الموزع -->
+        <div class="mb-2">
+            <strong>الاسم:</strong>
+            <a href="{{ route('distributors.show', $invoice->distributor) }}" class="text-decoration-none">
+                {{ $invoice->distributor->name }}
+            </a>
+        </div>
+        <div class="mb-2">
+            <strong>رقم الهاتف:</strong> {{ $invoice->distributor->phone ?? '-' }}
+        </div>
+
+    @else
+        <span class="text-muted">لا توجد بيانات للعميل</span>
+    @endif
+</div>
+
 
                     <!-- معلومات الخدمة -->
                     <div class="col-md-6 mb-4">
@@ -132,24 +155,25 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($invoice->payments as $payment)
-                                        <tr>
-                                            <td>{{ $payment->paid_at->format('Y-m-d') }}</td>
-                                            <td>
-                                                @if($payment->method === 'cash')
-                                                    <span class="badge bg-info">نقدي</span>
-                                                @else
-                                                    <span class="badge bg-primary">بنكي</span>
-                                                @endif
-                                            </td>
-                                            <td>{{ number_format($payment->amount, 2) }}</td>
-                                            <td>{{ $payment->user->name ?? '-' }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="4" class="text-center text-muted">لا توجد دفعات بعد</td>
-                                        </tr>
-                                    @endforelse
+                                  @forelse($invoice->payments ?? [] as $payment)
+    <tr>
+        <td>{{ $payment->paid_at->format('Y-m-d') }}</td>
+        <td>
+            @if($payment->method === 'cash')
+                <span class="badge bg-info">نقدي</span>
+            @else
+                <span class="badge bg-primary">بنكي</span>
+            @endif
+        </td>
+        <td>{{ number_format($payment->amount, 2) }}</td>
+        <td>{{ $payment->user->name ?? '-' }}</td>
+    </tr>
+@empty
+    <tr>
+        <td colspan="4" class="text-center text-muted">لا توجد دفعات بعد</td>
+    </tr>
+@endforelse
+
                                 </tbody>
                             </table>
                         </div>
@@ -262,10 +286,13 @@
                         </button>
                     @endif
                     
-                    <a href="{{ route('subscribers.show', $invoice->subscriber) }}" class="btn btn-outline-info">
-                        <i class="fas fa-user me-2"></i>
-                        عرض ملف المشترك
-                    </a>
+                 @if($invoice->subscriber)
+    <a href="{{ route('subscribers.show', $invoice->subscriber) }}" class="btn btn-outline-info">
+        <i class="fas fa-user me-2"></i>
+        عرض ملف المشترك
+    </a>
+@endif
+
                     
                     <a href="{{ route('invoices.create') }}?subscriber_id={{ $invoice->subscriber_id }}" class="btn btn-outline-primary">
                         <i class="fas fa-plus me-2"></i>

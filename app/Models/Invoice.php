@@ -15,7 +15,6 @@ class Invoice extends Model
         'invoice_number',
         'subscriber_id',
         'service_id',
-        'quantity',
         'user_id',
         'original_price',
         'discount_amount',
@@ -25,7 +24,10 @@ class Invoice extends Model
         'service_end_date',
         'status',
         'payment_status',
-        'notes'
+        'notes',
+         'client_type',       // جديد
+    'distributor_id',    // جديد
+    'distributor_card_id' // جديد
     ];
 
     protected $casts = [
@@ -36,6 +38,11 @@ class Invoice extends Model
         'service_start_date' => 'date',
         'service_end_date' => 'date',
     ];
+
+    public function distributorCard()
+{
+    return $this->belongsTo(DistributorCard::class, 'distributor_card_id');
+}
 
     // العلاقات
     public function subscriber()
@@ -51,11 +58,6 @@ class Invoice extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
     }
 
     // Scopes
@@ -86,11 +88,6 @@ class Invoice extends Model
         return $this->final_amount - $this->paid_amount;
     }
 
-    public function getSubtotalAttribute()
-    {
-        return ($this->original_price * max(1, (int)$this->quantity));
-    }
-
     public function getStatusTextAttribute()
     {
         return match($this->status) {
@@ -113,12 +110,13 @@ class Invoice extends Model
     }
 
     // Methods
-   public static function generateInvoiceNumber()
-{
+      public static function generateInvoiceNumber()
+    {
     $lastInvoice = self::orderBy('id', 'desc')->first();
     $number = $lastInvoice ? $lastInvoice->id + 1 : 1;
     return 'INV-' . date('Y') . '-' . str_pad($number, 6, '0', STR_PAD_LEFT);
-}
+    }
+    
 
     public function calculateEndDate()
     {
@@ -135,6 +133,13 @@ class Invoice extends Model
         return $startDate->addDays(30); // افتراضي شهر
     }
 
+public function payments()
+{
+     return $this->hasMany(Payment::class);
+}
+
+
+
     public function updatePaymentStatus()
     {
         if ($this->paid_amount >= $this->final_amount) {
@@ -149,5 +154,10 @@ class Invoice extends Model
         }
         
         $this->save();
+    }
+
+     public function distributor()
+    {
+        return $this->belongsTo(Distributor::class, 'distributor_id');
     }
 }

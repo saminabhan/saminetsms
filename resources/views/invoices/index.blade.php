@@ -101,7 +101,9 @@
                                 <td>
                                     <strong>{{ $invoice->invoice_number }}</strong>
                                 </td>
-                                <td>{{ $invoice->subscriber->name }}</td>
+<td>
+    {{ $invoice->client_type === 'subscriber' ? optional($invoice->subscriber)->name ?? '-' : optional($invoice->distributor)->name ?? '-' }}
+</td>
                                 <td>
                                     <small class="text-muted">{{ $invoice->service->name_ar }}</small>
                                 </td>

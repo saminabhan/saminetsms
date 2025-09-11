@@ -141,7 +141,7 @@ footer i {
                 <i class="fas fa-bars"></i>
             </button>
          <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
-            <i class="fas fa-sms me-2" style="color: rgba(255,255,255,0.9) !important; font-size: 1.5rem;"></i>
+            <!-- <i class="fas fa-sms me-2" style="color: rgba(255,255,255,0.9) !important; font-size: 1.5rem;"></i> -->
             <img src="{{ asset('assets/images/logo.png') }}" alt="SamiNetSMS Logo" class="img-fluid" style="max-width: 120px; height: auto;">
         </a>
 
@@ -278,6 +278,15 @@ footer i {
                 السحوبات
             </a>
         </li>
+        <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('distributors.*') ? 'active' : '' }}" 
+       href="{{ route('distributors.index') }}">
+        <i class="fas fa-user-tie me-2"></i>
+        الموزعون
+    </a>
+</li>
+
+
     </ul>
 
     <div class="mt-auto text-center" style="font-size: 0.75rem; color: #b0bec5;">
