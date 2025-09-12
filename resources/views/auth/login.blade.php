@@ -108,7 +108,6 @@
     <div class="login-card animate__animated animate__fadeInUp animate__delay-0.5s">
         <img src="{{ asset('assets/images/sami-logo.png') }}" alt="SamiNetSMS Logo" class="img-fluid mb-3" style="max-width: 280px; height: auto;">
         <h1>تسجيل الدخول</h1>
-                <p class="system-title" style="color: #4064aa;" >نظام إدارة شبكة سامي نت</p>
 
         {{-- عرض الأخطاء --}}
         @if(session('error'))
@@ -141,10 +140,7 @@
         <!-- <div class="mt-3">
             <a href="{{ route('password.request') }}">نسيت كلمة المرور؟</a>
         </div> -->
-        <div class="text-center mt-3">
-            <p class="text-muted small mb-0">© جميع الحقوق محفوظة لشبكة سامي نت 2025</p>
-        </div>
-        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
