@@ -63,7 +63,7 @@
     </div>
 </div>
 
-<div class="row mb-4">
+<div class="row mb-4 animate__animated animate__fadeInUp animate__delay-0.5s">
   <div class="col-md-3 mb-3">
     <div class="card stats-card">
       <div class="card-body d-flex justify-content-between align-items-center">
@@ -110,7 +110,7 @@
   </div>
 </div>
 
-<div class="card mb-4">
+<div class="card mb-4 animate__animated animate__fadeInUp animate__delay-0.5s">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="card-title mb-0"><i class="fas fa-trophy me-2"></i> أعلى 5 مشتركين دفعاً هذا الشهر</h5>
     <a href="{{ route('invoices.index') }}" class="btn btn-sm btn-outline-primary">عرض الفواتير</a>
