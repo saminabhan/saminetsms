@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function() {
     // SMS balance from API
     $smsBalance = 0;
     try {
-        $response = file_get_contents('http://hotsms.ps/getbalance.php?api_token=66ef464c07d8f');
+        $response = file_get_contents('https://hotsms.ps/getbalance.php?api_token=66ef464c07d8f');
         $smsBalance = intval($response);
     } catch (\Exception $e) {
         $smsBalance = 0;
