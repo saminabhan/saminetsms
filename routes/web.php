@@ -75,14 +75,22 @@ Route::middleware('auth')->group(function() {
     $sentMessages = \App\Models\Message::where('status', 'sent')->count();
     $failedMessages = \App\Models\Message::where('status', 'failed')->count();
 
-    // SMS balance from API
-    $smsBalance = 0;
-    try {
-        $response = file_get_contents('https://hotsms.ps/getbalance.php?api_token=66ef464c07d8f');
-        $smsBalance = intval($response);
-    } catch (\Exception $e) {
-        $smsBalance = 0;
+   $smsBalance = 0;
+try {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "https://hotsms.ps/getbalance.php?api_token=66ef464c07d8f");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // مهلة 10 ثواني
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // في حال SSL مش مضبوط
+    $response = curl_exec($ch);
+    if ($response === false) {
+        throw new \Exception(curl_error($ch));
     }
+    $smsBalance = intval($response);
+    curl_close($ch);
+} catch (\Exception $e) {
+    $smsBalance = 0;
+}
 
     // Finance quick stats
     // الرصيد الافتتاحي لكل صندوق
