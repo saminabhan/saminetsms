@@ -157,6 +157,21 @@
         </div>
     </div>
 </div>
+@php
+$servicesByCategory = [];
+foreach ($categories as $category) {
+    $servicesByCategory[$category->id] = [];
+    foreach ($category->activeServices as $service) {
+        $servicesByCategory[$category->id][] = [
+            'id' => $service->id,
+            'name' => $service->name_ar,
+            'price' => $service->price,
+            'full_description' => $service->full_description,
+            'allow_quantity' => $service->allow_quantity ? 1 : 0,
+        ];
+    }
+}
+@endphp
 
 @push('scripts')
 <script>
@@ -169,59 +184,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const quantityInput = document.getElementById('quantity');
     const quantityWrapper = document.getElementById('quantity_wrapper');
 
-    // البيانات الحالية
     const currentServiceId = {{ $invoice->service_id }};
     const currentCategoryId = {{ $invoice->service->service_category_id }};
 
-    // خدمات مجمعة حسب الفئة
-    const servicesByCategory = @json($categories->mapWithKeys(function($category) {
-        return [$category->id => $category->activeServices->map(function($service) {
-            return [
-                'id' => $service->id,
-                'name' => $service->name_ar,
-                'price' => $service->price,
-                'full_description' => $service->full_description,
-                'allow_quantity' => $service->allow_quantity
-            ];
-        })];
-    }));
-
-    // تحميل الخدمات للفئة الحالية
-    loadServicesForCategory(currentCategoryId, currentServiceId);
-
-    // عند تغيير الفئة
-    categorySelect.addEventListener('change', function() {
-        const categoryId = this.value;
-        loadServicesForCategory(categoryId);
-        resetPricing();
-    });
-
-    // عند تغيير الخدمة
-    serviceSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const allowQuantity = selectedOption.dataset.allowQuantity === '1';
-        if (selectedOption.value && selectedOption.dataset.price) {
-            originalPriceInput.value = parseFloat(selectedOption.dataset.price).toFixed(2);
-            if (allowQuantity) {
-                quantityWrapper.style.display = '';
-            } else {
-                quantityWrapper.style.display = 'none';
-                quantityInput.value = 1;
-            }
-            calculateFinalAmount();
-        } else {
-            resetPricing();
-            quantityWrapper.style.display = 'none';
-            quantityInput.value = 1;
-        }
-    });
-
-    // عند تغيير مبلغ الخصم
-    discountAmountInput.addEventListener('input', calculateFinalAmount);
+    const servicesByCategory = {!! json_encode($servicesByCategory, JSON_HEX_TAG) !!};
 
     function loadServicesForCategory(categoryId, selectedServiceId = null) {
         serviceSelect.innerHTML = '<option value="">اختر الخدمة</option>';
-        
+
         if (categoryId && servicesByCategory[categoryId]) {
             servicesByCategory[categoryId].forEach(function(service) {
                 const option = document.createElement('option');
@@ -229,11 +199,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 option.textContent = service.full_description;
                 option.dataset.price = service.price;
                 option.dataset.allowQuantity = service.allow_quantity ? '1' : '0';
-                
+
                 if (selectedServiceId && service.id == selectedServiceId) {
                     option.selected = true;
                 }
-                
+
                 serviceSelect.appendChild(option);
             });
             serviceSelect.disabled = false;
@@ -256,9 +226,11 @@ document.addEventListener('DOMContentLoaded', function() {
         finalAmountInput.value = '';
     }
 
-    // حساب المبلغ النهائي عند التحميل
+    // تحميل الخدمات للفئة الحالية عند التحميل
+    loadServicesForCategory(currentCategoryId, currentServiceId);
+
     // إظهار الكمية إن كانت الخدمة الحالية تسمح بها
-    (function initQuantityVisibility(){
+    (function initQuantityVisibility() {
         const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
         if (selectedOption) {
             const allowQuantity = selectedOption.dataset.allowQuantity === '1';
@@ -267,8 +239,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     })();
 
+    // عند تغيير الفئة
+    categorySelect.addEventListener('change', function() {
+        loadServicesForCategory(this.value);
+        resetPricing();
+    });
+
+    // عند تغيير الخدمة
+    serviceSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const allowQuantity = selectedOption.dataset.allowQuantity === '1';
+        if (selectedOption.value && selectedOption.dataset.price) {
+            originalPriceInput.value = parseFloat(selectedOption.dataset.price).toFixed(2);
+            quantityWrapper.style.display = allowQuantity ? '' : 'none';
+            if (!allowQuantity) quantityInput.value = 1;
+            calculateFinalAmount();
+        } else {
+            resetPricing();
+            quantityWrapper.style.display = 'none';
+            quantityInput.value = 1;
+        }
+    });
+
+    // عند تغيير مبلغ الخصم
+    discountAmountInput.addEventListener('input', calculateFinalAmount);
+
+    // حساب المبلغ النهائي عند التحميل
     calculateFinalAmount();
 });
 </script>
 @endpush
+
 @endsection
