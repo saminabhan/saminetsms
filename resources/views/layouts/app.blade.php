@@ -285,6 +285,57 @@ footer i {
         الموزعون
     </a>
 </li>
+<!-- التحليلات Dropdown -->
+@php
+    $analyticsActive = request()->routeIs('analytics.*');
+@endphp
+
+<!-- التحليلات Dropdown -->
+<li class="nav-item">
+    <a class="nav-link d-flex justify-content-between align-items-center {{ $analyticsActive ? '' : 'collapsed' }}"
+       data-bs-toggle="collapse" href="#analyticsMenu" role="button" 
+       aria-expanded="{{ $analyticsActive ? 'true' : 'false' }}" aria-controls="analyticsMenu">
+        <span><i class="fas fa-chart-line me-2"></i> التحليلات</span>
+        <i class="fas fa-chevron-down"></i>
+    </a>
+    <div class="collapse {{ $analyticsActive ? 'show' : '' }}" id="analyticsMenu">
+        <ul class="nav flex-column ms-3">
+            <!-- الإحصائيات والتحليلات العامة -->
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('analytics.index') ? 'active' : '' }}" 
+                   href="{{ route('analytics.index') }}">
+                    الإحصائيات والتحليلات العامة
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('analytics.financial') ? 'active' : '' }}" 
+                   href="{{ route('analytics.financial') }}">
+                    التقارير المالية
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('analytics.sales') ? 'active' : '' }}" 
+                   href="{{ route('analytics.sales') }}">
+                    تقرير المبيعات والعملاء
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('analytics.distributors') ? 'active' : '' }}" 
+                   href="{{ route('analytics.distributors') }}">
+                    تقرير الموزعين والمخزون
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('analytics.services') ? 'active' : '' }}" 
+                   href="{{ route('analytics.services') }}">
+                    تقرير الخدمات والحملات
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
 
 
     </ul>

@@ -2,6 +2,7 @@
 // routes/web.php
 
 use App\Http\Controllers\AccountSettingsController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\DistributorController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\InvoiceController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SessionsController;
+use App\Models\Invoice;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -108,14 +110,26 @@ try {
     $bankBalance = max(0, $bankBoxOpening + $bankIn - $bankOut);
 
     // Month revenue
-    $startThisMonth = now()->startOfMonth()->format('Y-m-d');
-    $endThisMonth = now()->endOfMonth()->format('Y-m-d');
-    $startPrevMonth = now()->subMonth()->startOfMonth()->format('Y-m-d');
-    $endPrevMonth = now()->subMonth()->endOfMonth()->format('Y-m-d');
+   $startThisMonth = now()->startOfMonth()->format('Y-m-d');
+    $endThisMonth   = now()->endOfMonth()->format('Y-m-d');
 
-    $revenueThisMonth = (float) \App\Models\Payment::whereBetween('paid_at', [$startThisMonth, $endThisMonth])->sum('amount');
-    $revenuePrevMonth = (float) \App\Models\Payment::whereBetween('paid_at', [$startPrevMonth, $endPrevMonth])->sum('amount');
-    $moMChange = $revenuePrevMonth > 0 ? (($revenueThisMonth - $revenuePrevMonth) / $revenuePrevMonth) * 100 : null;
+    // الشهر السابق
+    $startPrevMonth = now()->subMonth()->startOfMonth()->format('Y-m-d');
+    $endPrevMonth   = now()->subMonth()->endOfMonth()->format('Y-m-d');
+
+    // الإيراد من الفواتير الشهر الحالي
+    $revenueThisMonth = (float) Invoice::whereBetween('created_at', [$startThisMonth, $endThisMonth])
+        ->sum('final_amount');
+
+    // الإيراد من الفواتير الشهر السابق
+    $revenuePrevMonth = (float) Invoice::whereBetween('created_at', [$startPrevMonth, $endPrevMonth])
+        ->sum('final_amount');
+
+    // نسبة التغير (Month-over-Month)
+    $moMChange = $revenuePrevMonth > 0
+        ? (($revenueThisMonth - $revenuePrevMonth) / $revenuePrevMonth) * 100
+        : null;
+
 
     // Top 5 payers this month
     $topPayers = \App\Models\Payment::selectRaw('invoices.subscriber_id, SUM(payments.amount) as total')
@@ -207,4 +221,34 @@ Route::get('distributors/{distributor}/cards', [DistributorController::class, 'g
 Route::get('invoices/services-by-category', [InvoiceController::class, 'getServicesByCategory']);
 Route::get('invoices/service-price', [InvoiceController::class, 'getServicePrice']);
 
+// إضافة هذه المسارات إلى routes/web.php ضمن middleware auth
+
+// مسارات التحليلات المحسنة
+Route::prefix('analytics')->name('analytics.')->group(function () {
+    // الصفحة الرئيسية للتحليلات
+    Route::get('/', [AnalyticsController::class, 'index'])->name('index');
+    
+    // التقارير المالية التفصيلية
+    Route::get('/financial', [AnalyticsController::class, 'financialReports'])->name('financial');
+    
+    // تقرير المبيعات والعملاء
+    Route::get('/sales', [AnalyticsController::class, 'salesReports'])->name('sales');
+    
+    // تقرير الموزعين والمخزون
+    Route::get('/distributors', [AnalyticsController::class, 'distributorsReport'])->name('distributors');
+    
+    // تقرير الخدمات والحملات
+    Route::get('/services', [AnalyticsController::class, 'servicesReport'])->name('services');
+    
+    // API endpoints للرسوم البيانية
+    Route::get('/api/monthly-revenue/{year?}', [AnalyticsController::class, 'monthlyRevenueApi'])->name('monthlyRevenueApi');
+    Route::get('/api/expenses-chart', [AnalyticsController::class, 'expensesChartApi'])->name('expensesChartApi');
+    Route::get('/api/services-performance', [AnalyticsController::class, 'servicesPerformanceApi'])->name('servicesPerformanceApi');
+    Route::get('/api/distributors-performance', [AnalyticsController::class, 'distributorsPerformanceApi'])->name('distributorsPerformanceApi');
+    
+    // تصدير التقارير
+    Route::get('/export/financial', [AnalyticsController::class, 'exportFinancialReport'])->name('export-financial');
+    Route::get('/export/sales', [AnalyticsController::class, 'exportSalesReport'])->name('export-sales');
+    Route::get('/export/distributors', [AnalyticsController::class, 'exportDistributorsReport'])->name('export-distributors');
+});
 });
