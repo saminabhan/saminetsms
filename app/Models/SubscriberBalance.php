@@ -81,4 +81,5 @@ class SubscriberBalance extends Model
         $balance->updateBalance();
         return $balance;
     }
+    
 }

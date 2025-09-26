@@ -22,38 +22,84 @@
             flex-direction: column;
         }
 
-        .navbar-brand {
-            font-weight: 700;
-            color: #2c3e50 !important;
+        .navbar {
+            background: linear-gradient(90deg, #1f2a38 0%, #2e3b4e 100%);
+            margin-right: 16.666667%; /* مساحة للسايد بار */
+            transition: margin-right 0.3s;
+        }
+
+        .navbar.expanded {
+            margin-right: 0;
         }
 
         .sidebar {
-    min-height: calc(100vh - 56px);
-    background: #1f2a38; /* أزرق داكن/رمادي أنيق */
-    padding-top: 1rem;
-}
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 16.666667%;
+            height: 100vh;
+            background: #1f2a38;
+            z-index: 1040;
+            padding-top: 1rem;
+            overflow-y: auto;
+            transition: right 0.3s;
+        }
 
-.sidebar .nav-link {
-    color: #cfd8dc !important; /* أبيض رمادي فاتح للنصوص */
-    border-radius: 8px;
-    margin-bottom: 5px;
-    padding: 0.5rem 1rem;
-    transition: all 0.3s;
-}
+        .sidebar.collapsed {
+            right: -16.666667%;
+        }
 
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-    background-color: #455a64; /* تباين هادئ عند التحديد أو المرور */
-    color: #fff !important;
-}
+        .sidebar .logo-container {
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
 
-.sidebar .nav-link i {
-    color: #90a4ae; /* أيقونات رمادية هادئة */
-}
+        .sidebar .nav-link {
+            color: #cfd8dc !important;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s;
+        }
 
-.navbar {
-    background: linear-gradient(90deg, #1f2a38 0%, #2e3b4e 100%);
-}
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: #455a64;
+            color: #fff !important;
+        }
+
+        .sidebar .nav-link i {
+            color: #90a4ae;
+        }
+
+        .sidebar-toggle {
+            position: absolute;
+            top: 8px;
+            right: 212px;
+            z-index: 1050;
+            background-color: transparent;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            transition: right 0.3s;
+        }
+
+        .sidebar-toggle.collapsed {
+            right: 10px;
+        }
+
+        .main-content {
+            margin-right: 16.666667%;
+            padding: 1.5rem!important;
+            transition: margin-right 0.3s;
+            min-height: calc(100vh - 40px);
+        }
+
+        .main-content.expanded {
+            margin-right: 0;
+        }
 
         .card {
             border: none;
@@ -98,308 +144,364 @@
             background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
         }
 
-        /* Sidebar responsive */
+        footer {
+            background-color: transparent;
+            color: #b0bec5;
+            text-align: center;
+            padding: 0.5rem 0;
+            font-size: 0.75rem;
+            margin-top: auto;
+            margin-right: 16.666667%;
+            transition: margin-right 0.3s;
+        }
+
+        footer.expanded {
+            margin-right: 0;
+        }
+
+        footer i {
+            display: none;
+        }
+
+        /* Responsive styles */
         @media (max-width: 991.98px) {
+            .navbar {
+                margin-right: 0;
+            }
+            
             .sidebar {
-                position: fixed;
-                top: 56px;
-                right: -250px; /* البداية خارج الشاشة على اليمين */
-                width: 250px;
-                height: calc(100% - 56px);
-                z-index: 1030;
-                transition: right 0.3s; /* نطبق الانتقال على right فقط */
+                right: -16.666667%;
             }
-            .sidebar.show {
-                right: 0; /* تظهر على اليمين */
+            
+            .sidebar-toggle {
+                right: 10px;
             }
-            main.col-md-9, main.col-lg-10 {
-                padding-left: 1rem;
-                padding-right: 1rem;
+            
+            .main-content {
+                margin-right: 0;
+                padding: 80px 15px 20px;
+            }
+            
+            footer {
+                margin-right: 0;
             }
         }
-footer {
-    background-color: #1f2a38; /* نفس لون sidebar لكن أغمق شوي */
-    color: #b0bec5; /* نص رمادي فاتح هادي */
-    text-align: center;
-    padding: 0.5rem 0;
-    font-size: 0.75rem; /* أصغر شوي */
-    margin-top: auto;
-    border-top: 1px solid #2c3e50; /* خط رقيق يحدد الفوتر */
-}
 
-footer i {
-    display: none; /* إزالة أيقونات غير ضرورية */
-}
+        /* Custom scrollbar for sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: #1f2a38;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #455a64;
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #546e7a;
+        }
     </style>
     @stack('styles')
 </head>
 <body>
+    <!-- Sidebar Toggle Button -->
+    <button class="sidebar-toggle" id="sidebarToggleBtn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="logo-container">
+            <a href="{{ route('dashboard') }}">
+                <img src="{{ asset('assets/images/click-logo-white.png') }}" alt="SamiNetSMS Logo" class="img-fluid" style="max-width: 115px; height: auto;">
+            </a>
+        </div>
+        
+        <ul class="nav flex-column mb-auto">
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+                   href="{{ route('dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    لوحة التحكم
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('subscribers.*') ? 'active' : '' }}" 
+                   href="{{ route('subscribers.index') }}">
+                    <i class="fas fa-users me-2"></i>
+                    المشتركين
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}" 
+                   href="{{ route('messages.index') }}">
+                    <i class="fas fa-envelope me-2"></i>
+                    الرسائل
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" 
+                   href="{{ route('invoices.index') }}">
+                    <i class="fas fa-file-invoice me-2"></i>
+                    الفواتير
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('services.*') ? 'active' : '' }}" 
+                   href="{{ route('services.index') }}">
+                    <i class="fas fa-cogs me-2"></i>
+                    الخدمات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('service-categories.*') ? 'active' : '' }}" 
+                   href="{{ route('service-categories.index') }}">
+                    <i class="fas fa-tags me-2"></i>
+                    فئات الخدمات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('finance.*') ? 'active' : '' }}" 
+                   href="{{ route('finance.index') }}">
+                    <i class="fas fa-coins me-2"></i>
+                    المالية
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('finance.debtors') ? 'active' : '' }}" 
+                   href="{{ route('finance.debtors') }}">
+                    <i class="fas fa-user-minus me-2"></i>
+                    المدينون
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('finance.balances') ? 'active' : '' }}" 
+                   href="{{ route('finance.balances') }}">
+                    <i class="fas fa-scale-balanced me-2"></i>
+                    أرصدة المشتركين
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('expense-categories.*') ? 'active' : '' }}" 
+                   href="{{ route('expense-categories.index') }}">
+                    <i class="fas fa-list me-2"></i>
+                    فئات المصروفات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" 
+                   href="{{ route('partners.index') }}">
+                    <i class="fas fa-people-group me-2"></i>
+                    الشركاء
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('withdrawals.*') ? 'active' : '' }}" 
+                   href="{{ route('withdrawals.index') }}">
+                    <i class="fas fa-arrow-down-wide-short me-2"></i>
+                    السحوبات
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('distributors.*') ? 'active' : '' }}" 
+                   href="{{ route('distributors.index') }}">
+                    <i class="fas fa-user-tie me-2"></i>
+                    الموزعون
+                </a>
+            </li>
+            
+            <!-- التحليلات Dropdown -->
+            @php
+                $analyticsActive = request()->routeIs('analytics.*');
+            @endphp
+            
+            <li class="nav-item">
+                <a class="nav-link d-flex justify-content-between align-items-center {{ $analyticsActive ? '' : 'collapsed' }}"
+                   data-bs-toggle="collapse" href="#analyticsMenu" role="button" 
+                   aria-expanded="{{ $analyticsActive ? 'true' : 'false' }}" aria-controls="analyticsMenu">
+                    <span><i class="fas fa-chart-line me-2"></i> التحليلات</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+                <div class="collapse {{ $analyticsActive ? 'show' : '' }}" id="analyticsMenu">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analytics.index') ? 'active' : '' }}" 
+                               href="{{ route('analytics.index') }}">
+                                الإحصائيات والتحليلات العامة
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analytics.financial') ? 'active' : '' }}" 
+                               href="{{ route('analytics.financial') }}">
+                                التقارير المالية
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analytics.sales') ? 'active' : '' }}" 
+                               href="{{ route('analytics.sales') }}">
+                                تقرير المبيعات والعملاء
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analytics.distributors') ? 'active' : '' }}" 
+                               href="{{ route('analytics.distributors') }}">
+                                تقرير الموزعين والمخزون
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('analytics.services') ? 'active' : '' }}" 
+                               href="{{ route('analytics.services') }}">
+                                تقرير الخدمات والحملات
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark" >
+    <nav class="navbar navbar-expand-lg navbar-dark" id="navbar">
         <div class="container-fluid">
-            <button class="btn btn-light d-lg-none me-2" id="sidebarToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-         <a class="navbar-brand d-flex align-items-center" href="{{ route('dashboard') }}">
-            <!-- <i class="fas fa-sms me-2" style="color: rgba(255,255,255,0.9) !important; font-size: 1.5rem;"></i> -->
-            <img src="{{ asset('assets/images/logo.png') }}" alt="SamiNetSMS Logo" class="img-fluid" style="max-width: 120px; height: auto;">
-        </a>
-
-
-</ul>
-
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-          <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ms-auto">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: rgba(255,255,255,0.9) !important;">
-                <i class="fas fa-user me-1"></i> مرحباً بك يا {{ Auth::user()->name }}!
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-               <li>
-                    <a class="dropdown-item" href="{{ route('account.settings') }}">
-                        <i class="fas fa-cog me-2"></i> إعدادات الحساب
-                    </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <a class="dropdown-item" href="{{ route('sessions.index') }}">
-                        <i class="fas fa-cog me-2"></i> جلسات دخول النظام
-                    </a>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <a class="dropdown-item" href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                        @csrf
-                    </form>
-                </li>
-            </ul>
-        </li>
-    </ul>
-</div>
-
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: rgba(255,255,255,0.9) !important;">
+                            <i class="fas fa-user me-1"></i> مرحباً بك يا {{ Auth::user()->name }}!
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('account.settings') }}">
+                                    <i class="fas fa-cog me-2"></i> إعدادات الحساب
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('sessions.index') }}">
+                                    <i class="fas fa-cog me-2"></i> جلسات دخول النظام
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    @csrf
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <div class="container-fluid flex-grow-1">
-        <div class="row">
-            <!-- Sidebar -->
-           <nav class="col-md-3 col-lg-2 sidebar d-flex flex-column p-3">
-    <ul class="nav flex-column mb-auto">
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
-               href="{{ route('dashboard') }}">
-                <i class="fas fa-tachometer-alt me-2"></i>
-                لوحة التحكم
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('subscribers.*') ? 'active' : '' }}" 
-               href="{{ route('subscribers.index') }}">
-                <i class="fas fa-users me-2"></i>
-                المشتركين
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}" 
-               href="{{ route('messages.index') }}">
-                <i class="fas fa-envelope me-2"></i>
-                الرسائل
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('invoices.*') ? 'active' : '' }}" 
-               href="{{ route('invoices.index') }}">
-                <i class="fas fa-file-invoice me-2"></i>
-                الفواتير
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('services.*') ? 'active' : '' }}" 
-               href="{{ route('services.index') }}">
-                <i class="fas fa-cogs me-2"></i>
-                الخدمات
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('service-categories.*') ? 'active' : '' }}" 
-               href="{{ route('service-categories.index') }}">
-                <i class="fas fa-tags me-2"></i>
-                فئات الخدمات
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('finance.*') ? 'active' : '' }}" 
-               href="{{ route('finance.index') }}">
-                <i class="fas fa-coins me-2"></i>
-                المالية
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('finance.debtors') ? 'active' : '' }}" 
-               href="{{ route('finance.debtors') }}">
-                <i class="fas fa-user-minus me-2"></i>
-                المدينون
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('finance.balances') ? 'active' : '' }}" 
-               href="{{ route('finance.balances') }}">
-                <i class="fas fa-scale-balanced me-2"></i>
-                أرصدة المشتركين
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('expense-categories.*') ? 'active' : '' }}" 
-               href="{{ route('expense-categories.index') }}">
-                <i class="fas fa-list me-2"></i>
-                فئات المصروفات
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('partners.*') ? 'active' : '' }}" 
-               href="{{ route('partners.index') }}">
-                <i class="fas fa-people-group me-2"></i>
-                الشركاء
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ request()->routeIs('withdrawals.*') ? 'active' : '' }}" 
-               href="{{ route('withdrawals.index') }}">
-                <i class="fas fa-arrow-down-wide-short me-2"></i>
-                السحوبات
-            </a>
-        </li>
-        <li class="nav-item">
-    <a class="nav-link {{ request()->routeIs('distributors.*') ? 'active' : '' }}" 
-       href="{{ route('distributors.index') }}">
-        <i class="fas fa-user-tie me-2"></i>
-        الموزعون
-    </a>
-</li>
-<!-- التحليلات Dropdown -->
-@php
-    $analyticsActive = request()->routeIs('analytics.*');
-@endphp
+    <!-- Main content -->
+    <main class="main-content" id="mainContent">
+        <!-- Alerts -->
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-<!-- التحليلات Dropdown -->
-<li class="nav-item">
-    <a class="nav-link d-flex justify-content-between align-items-center {{ $analyticsActive ? '' : 'collapsed' }}"
-       data-bs-toggle="collapse" href="#analyticsMenu" role="button" 
-       aria-expanded="{{ $analyticsActive ? 'true' : 'false' }}" aria-controls="analyticsMenu">
-        <span><i class="fas fa-chart-line me-2"></i> التحليلات</span>
-        <i class="fas fa-chevron-down"></i>
-    </a>
-    <div class="collapse {{ $analyticsActive ? 'show' : '' }}" id="analyticsMenu">
-        <ul class="nav flex-column ms-3">
-            <!-- الإحصائيات والتحليلات العامة -->
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('analytics.index') ? 'active' : '' }}" 
-                   href="{{ route('analytics.index') }}">
-                    الإحصائيات والتحليلات العامة
-                </a>
-            </li>
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('analytics.financial') ? 'active' : '' }}" 
-                   href="{{ route('analytics.financial') }}">
-                    التقارير المالية
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('analytics.sales') ? 'active' : '' }}" 
-                   href="{{ route('analytics.sales') }}">
-                    تقرير المبيعات والعملاء
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('analytics.distributors') ? 'active' : '' }}" 
-                   href="{{ route('analytics.distributors') }}">
-                    تقرير الموزعين والمخزون
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('analytics.services') ? 'active' : '' }}" 
-                   href="{{ route('analytics.services') }}">
-                    تقرير الخدمات والحملات
-                </a>
-            </li>
-        </ul>
-    </div>
-</li>
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>يرجى تصحيح الأخطاء التالية:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
+        @yield('content')
+    </main>
 
-
-    </ul>
-
-    <div class="mt-auto text-center" style="font-size: 0.75rem; color: #b0bec5;">
-      <i class="fas fa-copyright"></i> جميع الحقوق محفوظة
-    </div>
-</nav>
-
-
-            <!-- Main content -->
-            <main class="col-md-9 col-lg-10 p-4">
-                <!-- Alerts -->
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>يرجى تصحيح الأخطاء التالية:</strong>
-                        <ul class="mb-0 mt-2">
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                @endif
-
-                @yield('content')
-            </main>
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="container-fluid animate__animated animate__fadeInUp animate__delay-0.5s">
+            <p class="mb-0">© 2025 جميع الحقوق محفوظة لشبكة كليك نت.</p>
         </div>
-    </div>
-   
+    </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Sidebar toggle script -->
     <script>
-        const sidebar = document.querySelector('.sidebar');
-        const toggleBtn = document.getElementById('sidebarToggle');
-
-        toggleBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('show');
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+            const navbar = document.getElementById('navbar');
+            const mainContent = document.getElementById('mainContent');
+            const footer = document.getElementById('footer');
+            
+            // Check if sidebar should be collapsed on page load (for mobile)
+            if (window.innerWidth <= 991.98) {
+                sidebar.classList.add('collapsed');
+                sidebarToggleBtn.classList.add('collapsed');
+                navbar.classList.add('expanded');
+                mainContent.classList.add('expanded');
+                footer.classList.add('expanded');
+            }
+            
+            // Toggle sidebar
+            sidebarToggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                sidebarToggleBtn.classList.toggle('collapsed');
+                navbar.classList.toggle('expanded');
+                mainContent.classList.toggle('expanded');
+                footer.classList.toggle('expanded');
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 991.98) {
+                    sidebar.classList.remove('collapsed');
+                    sidebarToggleBtn.classList.remove('collapsed');
+                    navbar.classList.remove('expanded');
+                    mainContent.classList.remove('expanded');
+                    footer.classList.remove('expanded');
+                } else {
+                    sidebar.classList.add('collapsed');
+                    sidebarToggleBtn.classList.add('collapsed');
+                    navbar.classList.add('expanded');
+                    mainContent.classList.add('expanded');
+                    footer.classList.add('expanded');
+                }
+            });
         });
     </script>
-<!-- Animate.css CDN -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-<!-- أضف هذا السطر قبل </body> أو في قسم السكريبتات -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Animate.css CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     @yield('scripts')
     @stack('scripts')
 </body>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>تسجيل الدخول - SamiNetSMS</title>
+    <title>تسجيل الدخول - كليك نت</title>
 
     <!-- Bootstrap RTL CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
@@ -82,7 +82,7 @@
         }
 
         .btn-custom {
-            background-color: #4064aa;
+            background-color: #ACC362;
             color: #ffffff;
             border-radius: 8px;
             font-weight: 600;
@@ -94,7 +94,7 @@
             .btn-custom:focus,
             .btn-custom:active,
             .btn-custom:focus-visible {
-                background-color: #7c7c7c;
+                background-color: #133949a2;
                 color: #ffffff;
                 box-shadow: none;
             }
@@ -106,9 +106,9 @@
 </head>
 <body>
     <div class="login-card animate__animated animate__fadeInUp animate__delay-0.5s">
-        <img src="{{ asset('assets/images/sami-logo.png') }}" alt="SamiNetSMS Logo" class="img-fluid mb-3" style="max-width: 280px; height: auto;">
+        <img src="{{ asset('assets/images/click-logo.png') }}" alt="Click Logo" class="img-fluid mb-3" style="max-width: 200px; height: auto;">
         <h1>تسجيل الدخول</h1>
-                <p class="system-title text-muted" style="color: #4064aa;" >نظام إدارة شبكة سامي نت</p>
+                <p class="system-title text-muted" style="color: #4064aa;" >نظام إدارة شبكة كليك نت</p>
 
         {{-- عرض الأخطاء --}}
         @if(session('error'))
@@ -142,7 +142,7 @@
             <a href="{{ route('password.request') }}">نسيت كلمة المرور؟</a>
         </div> -->
         <div class="text-center mt-3">
-            <p class="text-muted small mb-0">© جميع الحقوق محفوظة لشبكة سامي نت 2025</p>
+            <p class="text-muted small mb-0">© جميع الحقوق محفوظة لشبكة كليك نت 2025</p>
         </div>
         </div>
 
