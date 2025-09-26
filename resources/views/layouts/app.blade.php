@@ -75,19 +75,14 @@
         }
 
         .sidebar-toggle {
-            position: absolute;
-            top: 8px;
-            right: 212px;
-            z-index: 1050;
             background-color: transparent;
             color: white;
             border: none;
             padding: 8px 12px;
-            transition: right 0.3s;
-        }
-
-        .sidebar-toggle.collapsed {
-            right: 10px;
+            margin-left: 10px;
+            position: relative;
+            z-index: 1050;
+            cursor: pointer;
         }
 
         .main-content {
@@ -170,11 +165,16 @@
             }
             
             .sidebar {
-                right: -16.666667%;
+                width: 75%;
+                right: -75%;
             }
             
-            .sidebar-toggle {
-                right: 10px;
+            .sidebar.collapsed {
+                right: -75%;
+            }
+            
+            .sidebar.show {
+                right: 0;
             }
             
             .main-content {
@@ -184,6 +184,22 @@
             
             footer {
                 margin-right: 0;
+            }
+            
+            /* إضافة خلفية شفافة للسايد بار على الأجهزة المحمولة */
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1035;
+                display: none;
+            }
+            
+            .sidebar-overlay.show {
+                display: block;
             }
         }
 
@@ -208,11 +224,9 @@
     @stack('styles')
 </head>
 <body>
-    <!-- Sidebar Toggle Button -->
-    <button class="sidebar-toggle" id="sidebarToggleBtn">
-        <i class="fas fa-bars"></i>
-    </button>
-
+    <!-- Sidebar Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <div class="logo-container">
@@ -367,6 +381,11 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark" id="navbar">
         <div class="container-fluid">
+            <!-- زر تبديل السايد بار -->
+            <button class="sidebar-toggle" id="sidebarToggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -459,41 +478,81 @@
             const navbar = document.getElementById('navbar');
             const mainContent = document.getElementById('mainContent');
             const footer = document.getElementById('footer');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
             
-            // Check if sidebar should be collapsed on page load (for mobile)
-            if (window.innerWidth <= 991.98) {
-                sidebar.classList.add('collapsed');
-                sidebarToggleBtn.classList.add('collapsed');
-                navbar.classList.add('expanded');
-                mainContent.classList.add('expanded');
-                footer.classList.add('expanded');
-            }
-            
-            // Toggle sidebar
-            sidebarToggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
-                sidebarToggleBtn.classList.toggle('collapsed');
-                navbar.classList.toggle('expanded');
-                mainContent.classList.toggle('expanded');
-                footer.classList.toggle('expanded');
-            });
-            
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 991.98) {
+            // دالة لفتح السايد بار
+            function openSidebar() {
+                if (window.innerWidth <= 991.98) {
+                    // للأجهزة المحمولة
                     sidebar.classList.remove('collapsed');
-                    sidebarToggleBtn.classList.remove('collapsed');
+                    sidebar.classList.add('show');
+                    sidebarOverlay.classList.add('show');
+                } else {
+                    // للأجهزة الكبيرة
+                    sidebar.classList.remove('collapsed');
                     navbar.classList.remove('expanded');
                     mainContent.classList.remove('expanded');
                     footer.classList.remove('expanded');
-                } else {
+                }
+            }
+            
+            // دالة لإغلاق السايد بار
+            function closeSidebar() {
+                if (window.innerWidth <= 991.98) {
+                    // للأجهزة المحمولة
+                    sidebar.classList.remove('show');
                     sidebar.classList.add('collapsed');
-                    sidebarToggleBtn.classList.add('collapsed');
+                    sidebarOverlay.classList.remove('show');
+                } else {
+                    // للأجهزة الكبيرة
+                    sidebar.classList.add('collapsed');
                     navbar.classList.add('expanded');
                     mainContent.classList.add('expanded');
                     footer.classList.add('expanded');
                 }
-            });
+            }
+            
+            // دالة لتبديل حالة السايد بار
+            function toggleSidebar() {
+                if (window.innerWidth <= 991.98) {
+                    if (sidebar.classList.contains('show')) {
+                        closeSidebar();
+                    } else {
+                        openSidebar();
+                    }
+                } else {
+                    if (sidebar.classList.contains('collapsed')) {
+                        openSidebar();
+                    } else {
+                        closeSidebar();
+                    }
+                }
+            }
+            
+            // التحقق من حجم الشاشة عند التحميل
+            function checkScreenSize() {
+                if (window.innerWidth <= 991.98) {
+                    // للأجهزة المحمولة
+                    closeSidebar();
+                } else {
+                    // للأجهزة الكبيرة
+                    openSidebar();
+                }
+            }
+            
+            // استدعاء الدالة عند التحميل
+            checkScreenSize();
+            
+            // إضافة حدث النقر على زر التبديل
+            sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            
+            // إضافة حدث النقر على الخلفية الشفافة للأجهزة المحمولة
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+            
+            // إضافة حدث تغيير حجم النافذة
+            window.addEventListener('resize', checkScreenSize);
         });
     </script>
 
